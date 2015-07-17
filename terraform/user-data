@@ -1,0 +1,51 @@
+#cloud-config
+
+coreos:
+  etcd2:
+    name: kuberdemo-etcd-${machine_num}
+    initial-cluster: ${initial_cluster}
+    initial-cluster-token: ${initial_cluster_token}
+    initial-cluster-state: new
+
+    initial-advertise-peer-urls: http://${public_ipv4}:2380
+    listen-peer-urls: http://0.0.0.0:2380
+    
+    advertise-client-urls: http://${public_ipv4}:2379
+    listen-client-urls: http://0.0.0.0:2379
+
+  fleet:
+    public-ip: ${public_ipv4}
+    etcd-servers: http://127.0.0.1:2379
+
+  # flannel:
+  #   interface: ${public_ipv4}
+
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    # - name: flanneld.service
+    #   command: start
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=2375
+        Service=docker.service
+        BindIPv6Only=both
+
+        [Install]
+        WantedBy=sockets.target
+
+write_files:
+  # this is needed since fleetctl is configured by defautl to talk to etcd on
+  # port 4011 :/
+  - content: FLEET_ETCD_SERVERS=http://127.0.0.1:2379
+    owner: root:root
+    path: /etc/default/fleetctl
+    permissions: '0644'
