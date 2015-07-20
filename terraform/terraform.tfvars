@@ -1,4 +1,4 @@
-size = 3
+size = 4
 floatingip_pool = "nova"
 image = "CoreOS-alpha"
 flavor = "m1.small"

@@ -1,0 +1,11 @@
+[Service]
+ExecStart=/opt/bin/kubelet \
+--address=0.0.0.0 \
+--port=10250 \
+--api_servers=$(/usr/bin/etcdctl get kubedemo/api_server):8080 \
+--allow_privileged=true \
+--register-node
+
+[X-Fleet]
+MachineMetadata=worker=true
+Global=true

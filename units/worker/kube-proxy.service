@@ -1,0 +1,6 @@
+[Service]
+ExecStart=/home/core/share/demo/bin/kube-proxy --master=$(/usr/bin/etcdctl get kubedemo/api_server):8080
+
+[X-Fleet]
+MachineMetadata=worker=true
+Global=true

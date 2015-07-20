@@ -1,1 +1,1 @@
-kuberdemo-etcd-${machine_num}=http://${ip_address}:2380
+${machine_name}=http://${ip_address}:2380

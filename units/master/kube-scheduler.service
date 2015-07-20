@@ -1,0 +1,5 @@
+[Service]
+ExecStart=/opt/bin/kube-scheduler --master=127.0.0.1:8080
+
+[X-Fleet]
+MachineMetadata=master=true

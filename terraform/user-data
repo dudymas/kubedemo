@@ -2,7 +2,7 @@
 
 coreos:
   etcd2:
-    name: kuberdemo-etcd-${machine_num}
+    name: ${machine_name}
     initial-cluster: ${initial_cluster}
     initial-cluster-token: ${initial_cluster_token}
     initial-cluster-state: new
@@ -16,6 +16,7 @@ coreos:
   fleet:
     public-ip: ${public_ipv4}
     etcd-servers: http://127.0.0.1:2379
+    metadata: ${fleet_metadata}
 
   flannel:
     interface: $private_ipv4
@@ -53,8 +54,8 @@ coreos:
       content: |
         [Unit]
         Description=Get kubernetes binarys
-        Requires=network-online.target
-        After=network-online.target
+        Requires=network-online.target flanneld.service
+        After=network-online.target flanneld.service
         [Service]
         ExecStart=/opt/bin/pull_bins.sh
         Type=oneshot
