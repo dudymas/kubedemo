@@ -17,16 +17,22 @@ coreos:
     public-ip: ${public_ipv4}
     etcd-servers: http://127.0.0.1:2379
 
-  # flannel:
-  #   interface: ${public_ipv4}
+  flannel:
+    interface: $private_ipv4
 
   units:
     - name: etcd2.service
       command: start
     - name: fleet.service
       command: start
-    # - name: flanneld.service
-    #   command: start
+    - name: flanneld.service
+      drop-ins:
+        - name: 50-network-config.conf
+          content: |
+            [Service]
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'
+      command: start
+
     - name: docker-tcp.socket
       command: start
       enable: true
@@ -42,10 +48,42 @@ coreos:
         [Install]
         WantedBy=sockets.target
 
+    - name: pull-bins.service
+      command: start
+      content: |
+        [Unit]
+        Description=Get kubernetes binarys
+        Requires=network-online.target
+        After=network-online.target
+        [Service]
+        ExecStart=/opt/bin/pull_bins.sh
+        Type=oneshot
+        RemainAfterExit=true
+
 write_files:
   # this is needed since fleetctl is configured by defautl to talk to etcd on
   # port 4011 :/
   - content: FLEET_ETCD_SERVERS=http://127.0.0.1:2379
     owner: root:root
     path: /etc/default/fleetctl
+    permissions: '0644'
+  - content: |
+      #!/bin/bash -e
+      mkdir -p /opt/bin
+      bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+      for b in "$${bins[@]}"; do
+          curl -L https://storage.googleapis.com/kubernetes-release/release/v0.21.4/bin/linux/amd64/$b 2>/dev/null > /opt/bin/$b
+          chmod a+x /opt/bin/$b
+      done
+    owner: root:root
+    path: /opt/bin/pull_bins.sh
+    permissions: '0755'
+  - content: |
+      [[ $- != *i* ]] && return
+      # enable vi mode for bash
+      set -o vi
+      # put demo bins on path
+      export PATH=/opt/bin:$PATH
+    owner: core:core
+    path: /home/core/.bashrc
     permissions: '0644'
