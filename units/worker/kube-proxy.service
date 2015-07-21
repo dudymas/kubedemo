@@ -1,5 +1,5 @@
 [Service]
-ExecStart=/home/core/share/demo/bin/kube-proxy --master=$(/usr/bin/etcdctl get kubedemo/api_server):8080
+ExecStart=/bin/sh -c "/opt/bin/kube-proxy --master=$(/usr/bin/etcdctl get kubedemo/api_server):8080"
 
 [X-Fleet]
 MachineMetadata=worker=true
