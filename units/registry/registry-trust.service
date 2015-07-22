@@ -2,9 +2,11 @@
 Type=oneshot
 EnvironmentFile=/etc/environment
 ExecStart=/bin/sh -c '/bin/mkdir -p /etc/docker/certs.d/$(/usr/bin/etcdctl get /docker/registry/ip):5000'
-ExecStart=/bin/sh -c '/bin/mkdir -p /etc/docker/certs.d/coreos-master:5000'
-ExecStart=/bin/sh -c '/usr/bin/etcdctl get /docker/registry/ca.pem >\
+ExecStartPost=/bin/sh -c '/bin/mkdir -p /etc/docker/certs.d/coreos-master:5000'
+ExecStartPost=/bin/sh -c '/usr/bin/etcdctl get /docker/registry/ca.pem >\
   /etc/docker/certs.d/$(/usr/bin/etcdctl get /docker/registry/ip):5000/ca.crt'
+ExecStartPost=/bin/sh -c '/usr/bin/etcdctl get /docker/registry/ca.pem >\
+  /etc/docker/certs.d/coreos-master:5000/ca.crt'
 
 [X-Fleet]
 Global=true

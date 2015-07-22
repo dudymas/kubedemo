@@ -3,16 +3,23 @@ Type=oneshot
 Environment=REGISTRY_ETCD_PATH=/docker/registry
 EnvironmentFile=/etc/environment
 
-ExecStartPre=/usr/bin/docker pull ehazlett/cert-tool
-ExecStartPre=/usr/bin/docker run --rm -v /etc/ssl/registry:/certs ehazlett/cert-tool \
+ExecStartPre=/usr/bin/docker pull ehazlett/certm
+ExecStartPre=-/bin/rm -r /etc/ssl/registry
+ExecStartPre=/usr/bin/docker run --rm -v /etc/ssl/registry:/certs ehazlett/certm \
   -d /certs \
-  -s coreos-master \
-  -s ${COREOS_PRIVATE_IPV4}
+  bundle generate \
+  --host coreos-master \
+  --host coreos-master.novalocal \
+  --host ${COREOS_PRIVATE_IPV4} \
+  -o OhSnap
+
 ExecStartPre=/bin/sh -c '/bin/echo -e "REGISTRY_ETCD_PATH=${REGISTRY_ETCD_PATH}\
 \nREGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.pem\
 \nREGISTRY_HTTP_TLS_KEY=/certs/server-key.pem\
 \nREGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry\
 " > /etc/registry.env'
+
+ExecStartPre=/usr/bin/etcdctl rm --recursive ${REGISTRY_ETCD_PATH}
 
 ExecStart=/usr/bin/etcdctl set ${REGISTRY_ETCD_PATH}/ip ${COREOS_PRIVATE_IPV4}
 ExecStartPost=/bin/sh -c 'cat /etc/ssl/registry/ca.pem | /usr/bin/etcdctl set ${REGISTRY_ETCD_PATH}/ca.pem'
