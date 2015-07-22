@@ -73,7 +73,7 @@ write_files:
       mkdir -p /opt/bin
       bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
       for b in "$${bins[@]}"; do
-          curl -L https://storage.googleapis.com/kubernetes-release/release/v0.21.4/bin/linux/amd64/$b 2>/dev/null > /opt/bin/$b
+          curl -L https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/$b 2>/dev/null > /opt/bin/$b
           chmod a+x /opt/bin/$b
       done
     owner: root:root

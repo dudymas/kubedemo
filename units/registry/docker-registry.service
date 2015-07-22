@@ -1,0 +1,7 @@
+[Service]
+EnvironmentFile=/etc/environment
+ExecStart=/usr/bin/docker run registry
+ExecStartPost=/usr/bin/etcdctl set docker-registry/cert ${COREOS_PRIVATE_IPV4}
+
+[X-Fleet]
+MachineMetadata=master=true
