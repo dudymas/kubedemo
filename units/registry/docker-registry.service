@@ -1,7 +1,15 @@
 [Service]
-EnvironmentFile=/etc/environment
-ExecStart=/usr/bin/docker run registry
-ExecStartPost=/usr/bin/etcdctl set docker-registry/cert ${COREOS_PRIVATE_IPV4}
+EnvironmentFile=/etc/registry.env
+ExecStartPre=/usr/bin/docker pull registry:2
+ExecStartPre=-/bin/sh -c "/usr/bin/docker rm -f registry || echo Didnt find a registry to delete. Moving on..."
+ExecStart=/usr/bin/docker run --name registry \
+  -v ${REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY}:${REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY} \
+  -v /etc/ssl/registry:/certs \
+  --hostname coreos-master \
+  -p 5000:5000 \
+  --env-file=/etc/registry.env \
+  registry:2
 
 [X-Fleet]
 MachineMetadata=master=true
+MachineOf=registry-config.service
