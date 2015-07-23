@@ -14,3 +14,4 @@ variable "tenant_name" {
     default = "kuberdemo"
 }
 variable "initial_cluster_token" {}
+variable "external_network" {}
