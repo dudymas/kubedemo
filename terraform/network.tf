@@ -12,6 +12,7 @@ resource "openstack_networking_router_v2" "private_router" {
 resource "openstack_networking_subnet_v2" "subnet_1" {
   network_id = "${openstack_networking_network_v2.private_1.id}"
   cidr = "192.168.1.0/24"
+  dns_nameservers = [ "8.8.8.8", "8.8.4.4" ]
   ip_version = 4
 }
 

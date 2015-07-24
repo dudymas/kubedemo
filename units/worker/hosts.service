@@ -1,0 +1,7 @@
+[Service]
+EnvironmentFile=/etc/environment
+ExecStart=/bin/sh -c "echo ${COREOS_PRIVATE_IPV4} $(hostname) > /etc/hosts"
+
+[X-Fleet]
+MachineMetadata=worker=true
+Global=true
