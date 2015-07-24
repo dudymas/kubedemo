@@ -29,6 +29,6 @@ resource "openstack_compute_instance_v2" "master" {
     }
 }
 
-output "master-address" {
-    value = "${openstack_compute_instance_v2.master.network.1.address}"
+output "master-ip" {
+    value = "${openstack_networking_floatingip_v2.kuber-master.address}"
 }
