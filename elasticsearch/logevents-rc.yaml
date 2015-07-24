@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: es
-        image: kubernetes/elasticsearch:1.0
+        image: dudymas/kubernetes-elasticsearch:latest
         env:
           - name: "CLUSTER_NAME"
             value: "logevents-db"
