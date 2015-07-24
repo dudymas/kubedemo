@@ -28,3 +28,7 @@ resource "openstack_compute_instance_v2" "master" {
         uuid = "${openstack_networking_network_v2.private_1.id}"
     }
 }
+
+output "master-address" {
+    value = "${openstack_compute_instance_v2.master.network.1.address}"
+}
