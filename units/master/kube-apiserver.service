@@ -7,7 +7,6 @@ ExecStart=/opt/bin/kube-apiserver \
 --kubelet_https=false \
 --secure_port=443 \
 --service-cluster-ip-range=10.100.0.0/16 \
--v=2 \
 --etcd_servers=http://127.0.0.1:2379
 ExecStartPost=/usr/bin/etcdctl set kubedemo/api_server ${COREOS_PRIVATE_IPV4}
 
